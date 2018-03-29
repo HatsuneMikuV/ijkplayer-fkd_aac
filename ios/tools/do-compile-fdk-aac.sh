@@ -89,25 +89,30 @@ if [ "$FF_ARCH" = "i386" ]; then
     FF_BUILD_NAME="fdk-aac-i386"
     FF_XCRUN_PLATFORM="iPhoneSimulator"
     FF_XCRUN_OSVERSION="-mios-simulator-version-min=6.0"
+    AAC_CFG_FLAGS_ARM="--host=i386-apple-darwin"
+    AAC_CFG_FLAGS="$AAC_CFG_FLAGS_ARM $AAC_CFG_FLAGS"
 elif [ "$FF_ARCH" = "x86_64" ]; then
     FF_BUILD_NAME="fdk-aac-x86_64"
     FF_XCRUN_PLATFORM="iPhoneSimulator"
     FF_XCRUN_OSVERSION="-mios-simulator-version-min=7.0"
+    AAC_CFG_FLAGS_ARM="--host=x86_64-apple-darwin"
+    AAC_CFG_FLAGS="$AAC_CFG_FLAGS_ARM $AAC_CFG_FLAGS"
 elif [ "$FF_ARCH" = "armv7" ]; then
     FF_BUILD_NAME="fdk-aac-armv7"
-    FF_XCRUN_OSVERSION="-miphoneos-version-min=6.0"
-    AAC_CFG_FLAGS="--disable-neon $AAC_CFG_FLAGS_ARM $AAC_CFG_FLAGS"
-#    OPENSSL_CFG_CPU="--cpu=cortex-a8"
+    FF_XCRUN_OSVERSION="-fembed-bitcode"
+    AAC_CFG_FLAGS="$AAC_CFG_FLAGS_ARM $AAC_CFG_FLAGS"
 elif [ "$FF_ARCH" = "armv7s" ]; then
     FF_BUILD_NAME="fdk-aac-armv7s"
     AAC_CFG_CPU="--cpu=swift"
-    FF_XCRUN_OSVERSION="-miphoneos-version-min=6.0"
-    AAC_CFG_FLAGS="--disable-neon $AAC_CFG_FLAGS_ARM $AAC_CFG_FLAGS"
+    FF_XCRUN_OSVERSION="-fembed-bitcode"
+    AAC_CFG_FLAGS="$AAC_CFG_FLAGS_ARM $AAC_CFG_FLAGS"
 elif [ "$FF_ARCH" = "arm64" ]; then
     FF_BUILD_NAME="fdk-aac-arm64"
-    FF_XCRUN_OSVERSION="-miphoneos-version-min=7.0"
-    AAC_CFG_FLAGS="--disable-neon $AAC_CFG_FLAGS_ARM $AAC_CFG_FLAGS"
+    FF_XCRUN_OSVERSION="-fembed-bitcode"
+    AAC_CFG_FLAGS_ARM="--host=aarch64-apple-darwin"
+    AAC_CFG_FLAGS="$AAC_CFG_FLAGS_ARM $AAC_CFG_FLAGS"
     FF_GASPP_EXPORT="GASPP_FIX_XCODE5=1"
+
 else
     echo "unknown architecture $FF_ARCH";
     exit 1
@@ -132,12 +137,16 @@ mkdir -p $FF_BUILD_PREFIX
 FF_XCRUN_SDK=`echo $FF_XCRUN_PLATFORM | tr '[:upper:]' '[:lower:]'`
 FF_XCRUN_SDK_PLATFORM_PATH=`xcrun -sdk $FF_XCRUN_SDK --show-sdk-platform-path`
 FF_XCRUN_SDK_PATH=`xcrun -sdk $FF_XCRUN_SDK --show-sdk-path`
-FF_XCRUN_CC="xcrun -sdk $FF_XCRUN_SDK clang"
+FF_XCRUN_CC="xcrun -sdk $FF_XCRUN_SDK clang -Wno-error=unused-command-line-argument-hard-error-in-future"
+FF_XCRUN_AS="$FF_BUILD_SOURCE/extras/gas-preprocessor.pl $FF_XCRUN_CC"
 
 export CROSS_TOP="$FF_XCRUN_SDK_PLATFORM_PATH/Developer"
 export CROSS_SDK=`echo ${FF_XCRUN_SDK_PATH/#$CROSS_TOP\/SDKs\//}`
 export BUILD_TOOL="$FF_XCRUN_DEVELOPER"
 export CC="$FF_XCRUN_CC -arch $FF_ARCH $FF_XCRUN_OSVERSION"
+export CXX="$CC"
+export CPP="$CC -E"
+export AS="$FF_XCRUN_AS"
 
 echo "build_source: $FF_BUILD_SOURCE"
 echo "build_prefix: $FF_BUILD_PREFIX"
@@ -145,6 +154,9 @@ echo "CROSS_TOP: $CROSS_TOP"
 echo "CROSS_SDK: $CROSS_SDK"
 echo "BUILD_TOOL: $BUILD_TOOL"
 echo "CC: $CC"
+echo "CXX: $CXX"
+echo "CPP: $CPP"
+echo "AS: $AS"
 
 #--------------------
 echo "\n--------------------"
