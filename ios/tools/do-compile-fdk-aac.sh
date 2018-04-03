@@ -50,7 +50,7 @@ esac
 # common defines
 FF_ARCH=$1
 if [ -z "$FF_ARCH" ]; then
-    echo "You must specific an architecture 'armv7, armv7s, arm64, i386, x86_64, ...'.\n"
+    echo "You must specific an architecture 'arm64, i386, x86_64, ...'.\n"
     exit 1
 fi
 
@@ -96,15 +96,6 @@ elif [ "$FF_ARCH" = "x86_64" ]; then
     FF_XCRUN_PLATFORM="iPhoneSimulator"
     FF_XCRUN_OSVERSION="-mios-simulator-version-min=7.0"
     AAC_CFG_FLAGS_ARM="--host=x86_64-apple-darwin"
-    AAC_CFG_FLAGS="$AAC_CFG_FLAGS_ARM $AAC_CFG_FLAGS"
-elif [ "$FF_ARCH" = "armv7" ]; then
-    FF_BUILD_NAME="fdk-aac-armv7"
-    FF_XCRUN_OSVERSION="-fembed-bitcode"
-    AAC_CFG_FLAGS="$AAC_CFG_FLAGS_ARM $AAC_CFG_FLAGS"
-elif [ "$FF_ARCH" = "armv7s" ]; then
-    FF_BUILD_NAME="fdk-aac-armv7s"
-    AAC_CFG_CPU="--cpu=swift"
-    FF_XCRUN_OSVERSION="-fembed-bitcode"
     AAC_CFG_FLAGS="$AAC_CFG_FLAGS_ARM $AAC_CFG_FLAGS"
 elif [ "$FF_ARCH" = "arm64" ]; then
     FF_BUILD_NAME="fdk-aac-arm64"

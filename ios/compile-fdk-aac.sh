@@ -18,11 +18,10 @@
 #----------
 # modify for your build tool
 
-FF_ALL_ARCHS_IOS6_SDK="armv7 i386"
-FF_ALL_ARCHS_IOS7_SDK="armv7 arm64 i386 x86_64"
-FF_ALL_ARCHS_IOS8_SDK="armv7 arm64 i386 x86_64"
 
-FF_ALL_ARCHS=$FF_ALL_ARCHS_IOS8_SDK
+FF_ALL_ARCHS_IOS9_SDK="arm64 i386 x86_64"
+
+FF_ALL_ARCHS=$FF_ALL_ARCHS_IOS9_SDK
 
 #----------
 UNI_BUILD_ROOT=`pwd`
